@@ -5,6 +5,7 @@
 /* indexes and lengths/ data in head (overwritting values in insert)
 how to pass/ use head and last
 special index cases (index within length)
+remove is a name taken by stdio.h
 */
 
 Node* makeNewNode(union Data data){
@@ -114,22 +115,32 @@ void removes(int index)
 
 union Data get(int index)
 {
+	Node* temp;
 	int len = length();
-	int count = 0;
-	if (index >= len ){
-		printf("Provided index is out of range.\n");
+	if(index<0 || index>=len){
+		printf("Index is out of range.\n");
 		exit(-1);
 	}
-	Node *i = head.next;
-	Node *j = last.previous;
-	for (Node *i = head.next; i!=NULL; i=i->next){
-		if (index == count){
-			return i->data;
-		}
-		else{
+	else if (index <= len/2){
+		temp = head;
+		int count = 0;
+		while (count < index){
+			temp = temp->next;
 			count++;
 		}
+		return temp->data;
 	}
+	else{
+		temp = last;
+		int count = len-1;
+		while (count > index){
+			temp = temp->previous;
+			count--;
+		}	
+		return temp->data;
+	}
+	printf("ERROR! Something went wrong.\n");
+	exit(-1);
 }
 
 
