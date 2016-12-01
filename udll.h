@@ -9,7 +9,7 @@ union Data {
 
 struct Node{
 	union Data data;
-//	int type; //0=int, 1=intPtr, 2=float, 3=floatPtr, 4=char, 5=charPtr
+	int type; //0=int, 1=intPtr, 2=float, 3=floatPtr, 4=char, 5=charPtr
 	struct Node* next;
 	struct Node* previous;
 };
@@ -19,10 +19,9 @@ typedef struct Node Node;
 Node head;
 Node last;
 
+void insert(int index, union Data data, int type);
 
-void insert(int index, union Data data);
-
-void removes(int index);
+void removeNode(int index);
 
 union Data get(int index);
 

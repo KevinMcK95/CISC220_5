@@ -9,26 +9,54 @@ remove is a name taken by stdio.h
 printing a union for testing
 */
 
-Node* makeNewNode(union Data data){
+Node* makeNewNode(union Data inData, int inType){
 	Node* new = (Node*)malloc(sizeof(Node));
-	new->data = data;
+	new->type = inType;
 	new->next = NULL;
 	new->previous = NULL;
+	if (inType == 0){
+		new->data.i = inData.i;
+	}
+	else if (inType == 1){
+		new->data.iP = inData.iP;
+	}
+	else if (inType == 2){
+		new->data.f = inData.f;
+//		printf("%f %i\n",new->data.f,new->type);
+	}
+	else if (inType == 3){
+		new->data.fP = inData.fP;
+	}
+	else if (inType == 4){
+		new->data.c = inData.c;
+	}
+	else if (inType == 5){
+		new->data.cP = inData.cP;
+	}
+	else{
+		exit(-1);
+	}
 	return new;
 }
 
 
-void insert(int index, union Data data)
+void insert(int index, union Data data, int type)
 {
 	int len = length();
 	Node* insertNode;
-	insertNode = makeNewNode(data);
+	insertNode = makeNewNode(data, type);
 	if (head.next == NULL){ //then last should also be NULL
 		head.next = insertNode;
 		last.previous = insertNode;
-		free(insertNode);
+	printf("%d %d\n", head.next->data.i,head.next->type);
+	free(insertNode);
+	printf("%d %d\n", head.next->data.i,head.next->type);
 		head.data.i = 1; //length 1 
 		return;
+	}
+	if (index > (len-1)){
+		printf("Index is out of range.\n");
+		exit(-1);
 	}
 	if (index == 0){
 		Node* temp = head.next;
@@ -73,11 +101,10 @@ void insert(int index, union Data data)
 		}
 	}
 	head.data.i = head.data.i+1;
-	free(insertNode);
 }
 
 
-void removes(int index)
+void removeNode(int index)
 {
 	int len = length();
 	if (index == 0){
@@ -127,6 +154,12 @@ union Data get(int index)
 	if(index<0 || index>=len){
 		printf("Index is out of range.\n");
 		exit(-1);
+	}
+	if (index == 0){
+		return head.next->data;
+	}
+	else if (index == (len-1)){
+		return last.previous->data;
 	}
 	else if (index <= len/2){
 		temp = head.next;
