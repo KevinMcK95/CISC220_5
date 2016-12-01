@@ -6,6 +6,7 @@
 how to pass/ use head and last
 special index cases (index within length)
 remove is a name taken by stdio.h
+printing a union for testing
 */
 
 Node* makeNewNode(union Data data){
@@ -22,27 +23,29 @@ void insert(int index, union Data data)
 	int len = length();
 	Node* insertNode;
 	insertNode = makeNewNode(data);
-	if (head == NULL){ //then last should also be NULL
-		head = insertNode;
-		last = insertNode;
+	if (head.next == NULL){ //then last should also be NULL
+		head.next = insertNode;
+		last.previous = insertNode;
 		free(insertNode);
 		head.data.i = 1; //length 1 
 		return;
 	}
 	if (index == 0){
-		head->previous = insertNode;
-		insertNode->next = head;
-		head = insertNode;
+		Node* temp = head.next;
+		temp->previous = insertNode;
+		insertNode->next = temp;
+		head.next = insertNode;
 	}
 	else if (index == (len-1)){
-		last->next = insertNode;
-		insertNode->previous = last;
-		last = insertNode;
+		Node* temp = last.previous;
+		temp->next = insertNode;
+		insertNode->previous = temp;
+		last.previous = insertNode;
 	}
 	else{
 		int count;
 		if(index <= len/2){
-			Node* temp = head;
+			Node* temp = head.next;
 			count = 0;
 			while (count<index-1){
 				count++;
@@ -55,7 +58,7 @@ void insert(int index, union Data data)
 			temp->previous = insertNode;
 		}
 		else{
-			Node* temp = last;
+			Node* temp = last.previous;
 			count = len-1;
 			while (count>index){
 				count--;
@@ -69,7 +72,7 @@ void insert(int index, union Data data)
 
 		}
 	}
-	head->data.i = head->data.i+1;
+	head.data.i = head.data.i+1;
 	free(insertNode);
 }
 
@@ -78,17 +81,21 @@ void removes(int index)
 {
 	int len = length();
 	if (index == 0){
-		head = head->next;
-		head->previous = NULL;
+		Node* temp = head.next;
+		head.next = temp->next;
+		head.previous = NULL;
 	}
 	else if (index == (len-1)){
-		last = last->previous;
-		last->next = NULL;
+		Node* temp = last.previous;
+		temp = temp->previous;
+		last.previous = temp;
+		temp->next = NULL;
+		last.next = NULL;
 	}
 	else{
 		int count;
 		if (index <= len/2){
-			Node* temp = head;
+			Node* temp = head.next;
 			count = 0;
 			while (count<index-1){
 				count++;
@@ -99,7 +106,7 @@ void removes(int index)
 			nextTemp->previous = temp;
 		}
 		else{
-			Node* temp = last;
+			Node* temp = last.previous;
 			count = len-1;
 			while (count>index+1){
 				count--;
@@ -110,7 +117,7 @@ void removes(int index)
 			prevTemp->next = temp;
 		}
 	}
-	head->data.i = head->data.i-1;
+	head.data.i = head.data.i-1;
 }
 
 union Data get(int index)
@@ -122,7 +129,7 @@ union Data get(int index)
 		exit(-1);
 	}
 	else if (index <= len/2){
-		temp = head;
+		temp = head.next;
 		int count = 0;
 		while (count < index){
 			temp = temp->next;
@@ -131,7 +138,7 @@ union Data get(int index)
 		return temp->data;
 	}
 	else{
-		temp = last;
+		temp = last.previous;
 		int count = len-1;
 		while (count > index){
 			temp = temp->previous;
@@ -146,5 +153,5 @@ union Data get(int index)
 
 int length()
 {
-	return head->data.i;
+	return head.data.i;
 }
