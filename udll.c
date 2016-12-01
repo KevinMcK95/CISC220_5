@@ -9,29 +9,29 @@ remove is a name taken by stdio.h
 printing a union for testing
 */
 
-Node* makeNewNode(union Data inData, int inType){
-	Node* new = (Node*)malloc(sizeof(Node));
-	new->type = inType;
-	new->next = NULL;
-	new->previous = NULL;
+Node makeNewNode(union Data inData, int inType){
+	Node new;// = (Node*)malloc(sizeof(Node));
+	new.type = inType;
+	new.next = NULL;
+	new.previous = NULL;
 	if (inType == 0){
-		new->data.i = inData.i;
+		new.data.i = inData.i;
 	}
 	else if (inType == 1){
-		new->data.iP = inData.iP;
+		new.data.iP = inData.iP;
 	}
 	else if (inType == 2){
-		new->data.f = inData.f;
+		new.data.f = inData.f;
 //		printf("%f %i\n",new->data.f,new->type);
 	}
 	else if (inType == 3){
-		new->data.fP = inData.fP;
+		new.data.fP = inData.fP;
 	}
 	else if (inType == 4){
-		new->data.c = inData.c;
+		new.data.c = inData.c;
 	}
 	else if (inType == 5){
-		new->data.cP = inData.cP;
+		new.data.cP = inData.cP;
 	}
 	else{
 		exit(-1);
@@ -43,32 +43,26 @@ Node* makeNewNode(union Data inData, int inType){
 void insert(int index, union Data data, int type)
 {
 	int len = length();
-	Node* insertNode;
+	Node insertNode;
 	insertNode = makeNewNode(data, type);
 	if (head.next == NULL){ //then last should also be NULL
-		head.next = insertNode;
-		last.previous = insertNode;
-	printf("%d %d\n", head.next->data.i,head.next->type);
-	free(insertNode);
-	printf("%d %d\n", head.next->data.i,head.next->type);
-		head.data.i = 1; //length 1 
-		return;
+		head.next = &insertNode;
+		last.previous = &insertNode;
 	}
-	if (index > (len-1)){
+	else if (index > len){
 		printf("Index is out of range.\n");
 		exit(-1);
 	}
-	if (index == 0){
+	else if (index == 0){
 		Node* temp = head.next;
-		temp->previous = insertNode;
-		insertNode->next = temp;
-		head.next = insertNode;
+		temp->previous = &insertNode;
+		insertNode.next = temp;
+		head.next = &insertNode;
 	}
-	else if (index == (len-1)){
-		Node* temp = last.previous;
-		temp->next = insertNode;
-		insertNode->previous = temp;
-		last.previous = insertNode;
+	else if (index == len){
+		insertNode.previous = last.previous;
+		last.previous->next = &insertNode;
+		last.previous = &insertNode;
 	}
 	else{
 		int count;
@@ -79,11 +73,11 @@ void insert(int index, union Data data, int type)
 				count++;
 				temp = temp->next;
 			}
-			insertNode->next = temp->next;
-			insertNode->previous = temp;
-			temp->next = insertNode;
-			temp = insertNode->next;
-			temp->previous = insertNode;
+			insertNode.next = temp->next;
+			insertNode.previous = temp;
+			temp->next = &insertNode;
+			temp = insertNode.next;
+			temp->previous = &insertNode;
 		}
 		else{
 			Node* temp = last.previous;
@@ -92,16 +86,17 @@ void insert(int index, union Data data, int type)
 				count--;
 				temp = temp->previous;
 			}
-			insertNode->previous = temp->previous;
-			insertNode->next = temp;
-			temp->previous = insertNode;
-			temp = insertNode->previous;
-			temp->next = insertNode;
+			insertNode.previous = temp->previous;
+			insertNode.next = temp;
+			temp->previous = &insertNode;
+			temp = insertNode.previous;
+			temp->next = &insertNode;
 
 		}
 	}
 	head.data.i = head.data.i+1;
 }
+
 
 
 void removeNode(int index)
